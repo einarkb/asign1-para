@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// AdminMgr is the manager class fdor Admin
 type AdminMgr struct {
 	DB *Database
 }

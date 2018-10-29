@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 )
 
+// Server is kinda the main aplication. it contains all the peices and will be started from main
 type Server struct {
 	db          *Database
 	mgrTicker   *MgrTicker
@@ -28,10 +30,17 @@ func (server *Server) Start() {
 		log.Fatal("$PORT is not set")
 	}
 
+	// check for the environment variable. if not found, defaults to 5
+	nPerPageS := os.Getenv("N_TICKER_PAGE")
+	if nPerPageS == "" {
+		nPerPageS = "5"
+	}
+	nPerPage, _ := strconv.Atoi(nPerPageS)
+
 	server.startTime = time.Now()
 	server.db = &Database{URI: os.Getenv("DB_URI"), Name: os.Getenv("DB_NAME")}
 	server.db.Connect()
-	server.mgrTicker = &MgrTicker{DB: server.db, PageCap: 5}
+	server.mgrTicker = &MgrTicker{DB: server.db, PageCap: nPerPage}
 	server.mgrWebhooks = &WebHookMgr{DB: server.db, Ticker: server.mgrTicker}
 	server.mgrTrack = &TrackMgr{DB: server.db, WHMgr: server.mgrWebhooks}
 	server.mgrAdmin = &AdminMgr{DB: server.db}
@@ -68,19 +77,20 @@ func (server *Server) initHandlers() {
 		encoder.Encode(MetaData{server.calculateUptime(), "Service for Paragliding tracks.", "v1"})
 	}
 
+	// track handlers
 	server.urlHandlers["POST"]["^/paragliding/api/track$"] = server.mgrTrack.HandlerPostTrack
 	server.urlHandlers["GET"]["^/paragliding/api/track$"] = server.mgrTrack.HandlerGetAllTracks
 	server.urlHandlers["GET"]["^/paragliding/api/track/[a-zA-Z0-9]{1,100}$"] = server.mgrTrack.HandlerGetTrackByID
 	server.urlHandlers["GET"]["^/paragliding/api/track/[a-zA-Z0-9]{1,50}/[a-zA-Z0-9_.-]{1,50}$"] = server.mgrTrack.HandlerGetTrackFieldByID
-
+	// ticker handlers
 	server.urlHandlers["GET"]["^/paragliding/api/ticker/latest$"] = server.mgrTicker.HandlerLatestTick
 	server.urlHandlers["GET"]["^/paragliding/api/ticker/$"] = server.mgrTicker.HandlerTicker
 	server.urlHandlers["GET"]["^/paragliding/api/ticker/[0-9]{1,20}$"] = server.mgrTicker.HandlerTickerByTimestamp
-
+	// webhook handlers
 	server.urlHandlers["POST"]["^/paragliding/api/webhook/new_track/$"] = server.mgrWebhooks.HandlerNewTrackWebHook
 	server.urlHandlers["GET"]["^/paragliding/api/webhook/new_track/[a-zA-Z0-9]{1,100}$"] = server.mgrWebhooks.HandlerGetWebhookHookByID
 	server.urlHandlers["DELETE"]["^/paragliding/api/webhook/new_track/[a-zA-Z0-9]{1,100}$"] = server.mgrWebhooks.HandlerDeleteWebhookHookByID
-
+	// admin handlers
 	server.urlHandlers["GET"]["^/paragliding/admin/api/tracks_count$"] = server.mgrAdmin.HandlerTrackCount
 	server.urlHandlers["DELETE"]["^/paragliding/admin/api/tracks$"] = server.mgrAdmin.HandlerDeleteAllTracks
 
@@ -93,11 +103,9 @@ func (server *Server) urlHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	//fmt.Fprint(w, r.URL.Path)
 	for url, hFunc := range handlerMap {
 		res, _ := regexp.MatchString(url, r.URL.Path)
 		if res {
-			//fmt.Fprint(w, "huuuu")
 			hFunc(w, r)
 			return
 		}
@@ -105,6 +113,7 @@ func (server *Server) urlHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 }
 
+// returns the server uptime in iso 8601 format
 func (server *Server) calculateUptime() string {
 	dur := time.Since(server.startTime)
 

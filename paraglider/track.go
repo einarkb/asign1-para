@@ -13,6 +13,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
 )
 
+// TrackMgr is the manager struct for tacks
 type TrackMgr struct {
 	DB    *Database
 	WHMgr *WebHookMgr
