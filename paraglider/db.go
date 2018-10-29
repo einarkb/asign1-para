@@ -11,7 +11,7 @@ import (
 )
 
 // DB TODO
-type DB struct {
+type Database struct {
 	Name string
 	URI  string
 

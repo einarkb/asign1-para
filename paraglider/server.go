@@ -8,7 +8,8 @@ import (
 )
 
 type Server struct {
-	db *DB
+	db     *Database
+	ticker *MgrTicker
 }
 
 func (server *Server) Hello(w http.ResponseWriter, r *http.Request) {
