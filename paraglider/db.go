@@ -117,7 +117,7 @@ func (db *Database) GetTrackCount() (int64, error) {
 	return count, err
 }
 
-// DeleteAllTracks returns the number of tracks in the database
+// DeleteAllTracks returns the number of tracks deleted from the database
 func (db *Database) DeleteAllTracks() (int64, error) {
 	col := db.db.Collection("tracks")
 	count, err := col.Count(context.Background(), nil)
@@ -234,4 +234,10 @@ func (db *Database) ResetWebhookCounter(webhook WebhookInfo) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// DeleteAllTracksAndWebhooks clears the database. used for testing
+func (db *Database) DeleteAllTracksAndWebhooks() {
+	db.db.Collection("tracks").DeleteMany(context.Background(), bson.NewDocument())
+	db.db.Collection("webhooks").DeleteMany(context.Background(), bson.NewDocument())
 }
