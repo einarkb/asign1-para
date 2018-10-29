@@ -8,6 +8,7 @@ import (
 )
 
 type Server struct {
+	db *DB
 }
 
 func (server *Server) Hello(w http.ResponseWriter, r *http.Request) {
