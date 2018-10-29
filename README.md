@@ -1,7 +1,7 @@
 # IMT2681 Assignment 2 - Paragliding
 ## Created by Einar Budsted - 131348
 
-###Api made in go for paragliding
+## Api made in go for paragliding
 
 ### Four environment variables are being used, one of them is optional
 - PORT: The port the app is listening on
