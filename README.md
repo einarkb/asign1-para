@@ -1,5 +1,5 @@
 # IMT2681 Assignment 2 - Paragliding
-Created by Einar Budsted - 131348
+## Created by Einar Budsted - 131348
 
 I were not figure out how to deploy the clock_trigger on openstack. instead I tested it locally up against the api on heroku and it worked great.
 I Also used Discord webhooks instead of Slack.
