@@ -1,6 +1,8 @@
 package main
 
-import
+import (
+	"github.com/einarkb/asign2-Para/paraglider"
+)
 
 func main() {
 	server := paragliding.Server{}
