@@ -39,7 +39,7 @@ type WebhookInfo struct {
 }
 
 // Connect creates a connection to the database
-func (db *DB) Connect() {
+func (db *Database) Connect() {
 	conn, err := mongo.Connect(context.Background(), db.URI, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +50,7 @@ func (db *DB) Connect() {
 }
 
 // Insert insert an object into specified collection. the id of the inserted object and and wether it was added
-func (db *DB) Insert(collection string, obj interface{}) (string, bool) {
+func (db *Database) Insert(collection string, obj interface{}) (string, bool) {
 	res, err := db.db.Collection(collection).InsertOne(context.Background(), obj)
 	if err != nil {
 		log.Println(err)
@@ -60,7 +60,7 @@ func (db *DB) Insert(collection string, obj interface{}) (string, bool) {
 }
 
 // GetAllTrackIDs returns an array of all the track ids in the database
-func (db *DB) GetAllTrackIDs() ([]objectid.ObjectID, error) {
+func (db *Database) GetAllTrackIDs() ([]objectid.ObjectID, error) {
 	var cursor mongo.Cursor
 	var err error
 	cursor, err = db.db.Collection("tracks").Find(context.Background(), nil)
@@ -82,7 +82,7 @@ func (db *DB) GetAllTrackIDs() ([]objectid.ObjectID, error) {
 }
 
 // GetTrackByID returns the track given an id and true/false wether it was found
-func (db *DB) GetTrackByID(id string) (TrackInfo, bool) {
+func (db *Database) GetTrackByID(id string) (TrackInfo, bool) {
 	var cursor mongo.Cursor
 	var err error
 	track := TrackInfo{}
@@ -107,7 +107,7 @@ func (db *DB) GetTrackByID(id string) (TrackInfo, bool) {
 }
 
 // GetTrackCount returns the number of tracks in the database
-func (db *DB) GetTrackCount() (int64, error) {
+func (db *Database) GetTrackCount() (int64, error) {
 	count, err := db.db.Collection("tracks").Count(context.Background(), nil)
 	if err != nil {
 		log.Fatal(err)
@@ -116,7 +116,7 @@ func (db *DB) GetTrackCount() (int64, error) {
 }
 
 // DeleteAllTracks returns the number of tracks in the database
-func (db *DB) DeleteAllTracks() (int64, error) {
+func (db *Database) DeleteAllTracks() (int64, error) {
 	col := db.db.Collection("tracks")
 	count, err := col.Count(context.Background(), nil)
 	if err != nil {
@@ -128,7 +128,7 @@ func (db *DB) DeleteAllTracks() (int64, error) {
 }
 
 // GetAllTracks returns all the tracks in the database
-func (db *DB) GetAllTracks() ([]TrackInfo, error) {
+func (db *Database) GetAllTracks() ([]TrackInfo, error) {
 	var cursor mongo.Cursor
 	var err error
 	cursor, err = db.db.Collection("tracks").Find(context.Background(), nil)
@@ -151,7 +151,7 @@ func (db *DB) GetAllTracks() ([]TrackInfo, error) {
 }
 
 // GetWebhookByID returns the webhook for the given id and true/false for wether it was found
-func (db *DB) GetWebhookByID(id string) (WebhookInfo, bool) {
+func (db *Database) GetWebhookByID(id string) (WebhookInfo, bool) {
 	var cursor mongo.Cursor
 	var err error
 	webhook := WebhookInfo{}
@@ -176,7 +176,7 @@ func (db *DB) GetWebhookByID(id string) (WebhookInfo, bool) {
 }
 
 // DeleteWebhookByID deletes the specified webhook from the database
-func (db *DB) DeleteWebhookByID(id string) error {
+func (db *Database) DeleteWebhookByID(id string) error {
 	oID, err := objectid.FromHex(id)
 	if err != nil {
 		return err
@@ -189,7 +189,7 @@ func (db *DB) DeleteWebhookByID(id string) error {
 }
 
 // GetAllInvokeWebhooks returns an rray of every webhook that should be invoked
-func (db *DB) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
+func (db *Database) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
 	// subtracts 1 from each webhook's counter
 	coll := db.db.Collection("webhooks")
 	_, err := coll.UpdateMany(context.Background(), nil, bson.NewDocument(bson.EC.SubDocumentFromElements("$inc",
@@ -225,7 +225,7 @@ func (db *DB) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
 }
 
 // ResetWebhookCounter resets the counter and updates LatestTimestamp for the passed webhook
-func (db *DB) ResetWebhookCounter(webhook WebhookInfo) {
+func (db *Database) ResetWebhookCounter(webhook WebhookInfo) {
 	_, err := db.db.Collection("webhooks").UpdateMany(context.Background(),
 		bson.NewDocument(bson.EC.ObjectID("_id", webhook.ID)),
 		bson.NewDocument(
