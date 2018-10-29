@@ -94,8 +94,8 @@ func (mgrTicker *MgrTicker) HandlerTickerByTimestamp(w http.ResponseWriter, r *h
 	json.NewEncoder(w).Encode(resp)
 }
 
-// GetTickerByTimeStamp returns responds with the latest added track, the first and last after specified timestamp, and the processing time
-// returns the reponse, and error if present and a bool representing if any tracks were found
+// GetTickerByTimeStamp returns  the latest added track, the first and last after specified timestamp, and the processing time
+// returns the reponse, and error if present
 func (mgrTicker *MgrTicker) GetTickerByTimeStamp(timestamp int64) (Response, error) {
 	startTime := time.Now()
 	tickerResp := Response{}
@@ -104,15 +104,18 @@ func (mgrTicker *MgrTicker) GetTickerByTimeStamp(timestamp int64) (Response, err
 		log.Fatal(err)
 		return tickerResp, err
 	}
+	// if no tracks were found
 	if len(tracks) == 0 {
 		return tickerResp, err
 	}
+
 	nTracks := len(tracks)
 	tickerResp.TLatest = tracks[nTracks-1].Timestamp
 
 	addedCount := 0
+	// loops through the found tracks and append thil pagecap or unthil the end if less than pagecap
 	for _, v := range tracks {
-		if v.Timestamp > timestamp { // guaranteed to not be out of range cause regex checks
+		if v.Timestamp > timestamp {
 			tickerResp.TrackIDs = append(tickerResp.TrackIDs, v.ID)
 			if addedCount == 0 {
 				tickerResp.TStart = v.Timestamp
