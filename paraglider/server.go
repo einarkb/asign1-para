@@ -8,8 +8,9 @@ import (
 )
 
 type Server struct {
-	db     *Database
-	ticker *MgrTicker
+	db          *Database
+	Mgrticker   *MgrTicker
+	MgrWebhooks *WebHookMgr
 }
 
 func (server *Server) Hello(w http.ResponseWriter, r *http.Request) {

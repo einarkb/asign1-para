@@ -196,7 +196,6 @@ func (db *Database) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
 		bson.EC.Int64("counter", -1))))
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println("feil her")
 		return nil, err
 	}
 
@@ -205,7 +204,6 @@ func (db *Database) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
 		bson.EC.Int64("$lte", 0))))
 	if err2 != nil {
 		fmt.Println(err2)
-		fmt.Println("feil her1")
 		return nil, err2
 	}
 	defer cursor.Close(context.Background())
@@ -217,7 +215,6 @@ func (db *Database) GetAllInvokeWebhooks() ([]WebhookInfo, error) {
 		err := cursor.Decode(&wh)
 		if err != nil {
 			log.Fatal(err)
-			fmt.Println("feil her2")
 		}
 		whs = append(whs, wh)
 	}
