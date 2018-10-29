@@ -29,7 +29,7 @@ func (server *Server) Start() {
 	}
 
 	server.startTime = time.Now()
-	server.db = &Database{URI: "mongodb://test:test12@ds141783.mlab.com:41783/a2-trackdb", Name: "a2-trackdb"}
+	server.db = &Database{URI: os.Getenv("DB_URI"), Name: os.Getenv("DB_NAME")}
 	server.db.Connect()
 	server.mgrTicker = &MgrTicker{DB: server.db, PageCap: 5}
 	server.mgrWebhooks = &WebHookMgr{DB: server.db, Ticker: server.mgrTicker}

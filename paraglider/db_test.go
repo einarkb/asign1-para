@@ -11,3 +11,7 @@ func Test_Connect(t *testing.T) {
 		t.Error("Failed to connect to database")
 	}
 }
+
+func Test_Insert(t *testing.T) {
+
+}
