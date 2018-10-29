@@ -10,7 +10,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
-// DB TODO
+// Database is the representation of the databse
 type Database struct {
 	Name string
 	URI  string
@@ -19,6 +19,7 @@ type Database struct {
 	db   *mongo.Database
 }
 
+// TrackInfo stores information about a track. used both in database and as response
 type TrackInfo struct {
 	ID          objectid.ObjectID `bson:"_id" json:"-"`
 	HDate       string            `bson:"H_date" json:"H_Date"`
@@ -30,6 +31,7 @@ type TrackInfo struct {
 	Timestamp   int64             `bson:"timestamp" json:"-"`
 }
 
+// WebhookInfo represents a webhook. is used both in databse and as a response
 type WebhookInfo struct {
 	ID              objectid.ObjectID `bson:"_id" json:"-"`
 	WebhookURL      string            `bson:"webhookURL" json:"webhookURL"`
