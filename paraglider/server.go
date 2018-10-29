@@ -11,6 +11,7 @@ type Server struct {
 	db          *Database
 	Mgrticker   *MgrTicker
 	MgrWebhooks *WebHookMgr
+	MgrTrack    *TrackMgr
 }
 
 func (server *Server) Hello(w http.ResponseWriter, r *http.Request) {
