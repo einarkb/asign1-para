@@ -80,10 +80,12 @@ func (whMgr *WebHookMgr) HandlerDeleteWebhookHookByID(w http.ResponseWriter, r *
 
 // InvokeNewWebHooks should be called when a new track is added. it will invoke the webohooks that should be invoked
 func (whMgr *WebHookMgr) InvokeNewWebHooks() {
+	// get the webhooks that should be invoked
 	webhooks, err := whMgr.DB.GetAllInvokeWebhooks()
 	if err != nil {
 		return
 	}
+	// loop through the webhooks and invoke them
 	for _, v := range webhooks {
 		startTime := time.Now()
 
@@ -116,7 +118,7 @@ func (whMgr *WebHookMgr) InvokeNewWebHooks() {
 			trackIdsString + ". (processing: " + strconv.FormatFloat(float64(time.Since(startTime))/float64(time.Millisecond), 'f', 2, 64) + "ms)"
 
 		var jsonStr = []byte(`{"content":"` + reponseString + `"}`)
-		//req, err := http.NewRequest("POST", v.WebhookURL, bytes.NewBuffer(jsonStr))
+		// post the request
 		_, postErr := http.Post(v.WebhookURL, "application/json", bytes.NewBuffer(jsonStr))
 		if postErr != nil {
 			fmt.Println(postErr)
