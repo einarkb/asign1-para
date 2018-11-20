@@ -17,3 +17,5 @@ up moving most of the code into a single package which made sense anyway whith h
 
 I chose to use db connection info directly in the code for tests in case teachers is planning to run them.
 
+### Deployment url:
+https://paragliding-a2-131348.herokuapp.com/paragliding/api
